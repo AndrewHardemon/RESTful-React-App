@@ -2,7 +2,6 @@
 const express = require('express');
 const router = express.Router();
 
-//implied /products
 //GET
 router.get('/', (req, res, next) => {
   res.status(200).json({
@@ -12,11 +11,12 @@ router.get('/', (req, res, next) => {
 
 //POST
 router.post('/', (req, res, next) => {
-  res.status(200).json({
+  res.status(201).json({
     message: "Handling GET request to /products"
   });
 });
 
+//GET/:id
 router.get('/:productId', (req, res, next) => {
   const id = req.params.productId;
   if( id === 'special') {
@@ -28,7 +28,21 @@ router.get('/:productId', (req, res, next) => {
     res.status(200).json({
       message: 'You passed an ID'
     });
-  }
+  };
+});
+
+//PATCH/:id
+router.patch('/:productId', (req, res, next) => {
+  res.status(200).json({
+    message: "Updated product!"
+  })
+});
+
+//PATCH/:id
+router.delete('/:productId', (req, res, next) => {
+  res.status(200).json({
+    message: "Deleted product!"
+  })
 });
 
 module.exports = router
