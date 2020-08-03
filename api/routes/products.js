@@ -4,6 +4,13 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Product = require('../models/product');
 
+//Error Handle Function
+function errorHandle(res, err) {
+  res.status(500).json({
+    error: err
+  });
+}
+
 //GET
 router.get('/', (req, res, next) => {
   Product.find() //find all
@@ -28,12 +35,7 @@ router.get('/', (req, res, next) => {
       // (doc.length >= 0) ? 200 ? 404 //optional
       res.status(200).json(response);
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({
-        error: err
-      })
-    })
+    .catch(err => errorHandle(res, err));
 });
 
 //POST
@@ -62,10 +64,7 @@ router.post('/', (req, res, next) => {
         }
       });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({error: err})
-    })
+    .catch(err => errorHandle(res, err));
 });
 
 //GET/:id
@@ -87,10 +86,7 @@ router.get('/:productId', (req, res, next) => {
       }) : res.status(404)
         .json({message: 'No valid entry for provided ID'})
     })
-    .catch(err => {
-      console.log(err)
-      res.status(500).json({error: err})
-    });
+    .catch(err => errorHandle(res, err));
 });
 
 //PATCH/:id
@@ -112,10 +108,7 @@ router.patch('/:productId', (req, res, next) => {
         }
       });
     })
-    .catch(err => {
-      console.log(err)
-      res.status(500).json({error: err})
-    });
+    .catch(err => errorHandle(res, err));
 });
 
 //DELETE/:id
@@ -133,12 +126,7 @@ router.delete('/:productId', (req, res, next) => {
         }
       });
     })
-    .catch(err => {
-      console.log(err);
-      res.status(500).json({
-        error:err
-      });
-    });
+    .catch(err => errorHandle(res, err));
 });
 
 module.exports = router
