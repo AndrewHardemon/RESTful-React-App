@@ -2,6 +2,39 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+//Storage
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './uploads/'); //callback
+  },
+  filename: function( req, file, cb){
+    cb(null, new Date().toISOString()
+      .replace(/:|\./g,'') + '-' + file.originalname);
+  }
+});
+//Filters
+const fileFilter = (req, file, cb) => {
+  if(file.mimetype === "image/jpeg" || 
+     file.mimetype ==='image/png'){
+    cb(null, true);   //accept file
+  } else {
+    //Will need to display this later on in the front end
+    cb(new Error('Not accepted file type'), false); //reject file
+  }
+}
+
+//Use storage with multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    filesize: 1024 * 1024 * 6 //only takes <6gb images
+  },
+  fileFilter: fileFilter
+});
+
+//Mongoose Model Object
 const Product = require('../models/product');
 
 //Error Handle Function
@@ -11,10 +44,14 @@ function errorHandle(res, err) {
   });
 }
 
+//OPTIONAL
+/*make routing file for all images coming to /uploads
+if I need to make the images hidden from the browser*/
+
 //GET
 router.get('/', (req, res, next) => {
   Product.find() //find all
-    .select('name price _id') //only get these for response
+    .select('name price _id productImage') //only get these for response
     .exec() //promise
     .then(docs => {
       const response = {
@@ -23,6 +60,7 @@ router.get('/', (req, res, next) => {
           return {
             name: doc.name,
             price: doc.price,
+            productImage: doc.productImage,
             _id: doc._id,
             request: {
               type: 'GET',
@@ -38,13 +76,15 @@ router.get('/', (req, res, next) => {
     .catch(err => errorHandle(res, err));
 });
 
-//POST
-router.post('/', (req, res, next) => {
+//POST (added upload middleware)
+router.post('/', upload.single('productImage'),(req, res, next) => {
+  console.log(req.file);
   //Create product in Mongo with Mongoose
   const product = new Product({
     _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
-    price: req.body.price
+    price: req.body.price,
+    productImage: req.file.path
   });
   product
     .save() //saves the product using mongoose 
@@ -56,6 +96,7 @@ router.post('/', (req, res, next) => {
           name: result.name,
           price: result.price, 
           _id: result._id,
+          productImage: result.productImage,
           request: {
             type: 'POST',
             description: 'Where to get the new product',
@@ -72,7 +113,7 @@ router.get('/:productId', (req, res, next) => {
   //const id = req.params.productId;
   //Use findById to get the product
   Product.findById(req.params.productId)
-    .select('name price _id') //only get these for response
+    .select('name price _id productImage') //only get these for response
     .exec() //creates promise
     .then(doc => {
       //Terenary Statement for if we found the product or not
@@ -113,7 +154,7 @@ router.patch('/:productId', (req, res, next) => {
 
 //DELETE/:id
 router.delete('/:productId', (req, res, next) => {
-  Product.remove({_id: req.params.productId})
+  Product.deleteOne({_id: req.params.productId})
     .exec()
     .then((/*result*/) => {
       res.status(200).json({

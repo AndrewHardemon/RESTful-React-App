@@ -18,7 +18,8 @@ mongoose.connect(process.env.ATLAS_URI
 mongoose.Promise = global.Promise; //might be redundant
 
 //Middleware
-app.use(morgan('dev'));
+app.use(morgan('dev')); //logger
+app.use('/uploads', express.static('uploads')); //public uploads
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json()); //adds body property to requests
 // app.use(cors()); //backup for cors
