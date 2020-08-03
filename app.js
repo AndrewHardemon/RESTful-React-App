@@ -9,6 +9,7 @@ require("dotenv").config();
 //Getting the routes form our api/routes folder
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
+const userRoutes = require('./api/routes/users');
 
 //Connect to monngodb atlas or local mongodb using mongoose
 mongoose.connect(process.env.ATLAS_URI 
@@ -40,6 +41,7 @@ app.use((req, res, next) => {
 //Routes for handleling routes
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
+app.use('/users', userRoutes);
 
 //Handle requests that don't hit the routes
 app.use((req, res, next) => {
