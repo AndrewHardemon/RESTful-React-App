@@ -6,8 +6,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-#hides nodemon.json
-nodemon.json
+#hide the yenv
+env.yaml
+
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

@@ -4,7 +4,8 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const mongoose = require('mongoose');
-require("dotenv").config();
+const yenv = require('yenv')
+const env = yenv('env.yaml')
 
 //Getting the routes form our api/routes folder
 const productRoutes = require('./api/routes/products');
@@ -12,7 +13,7 @@ const orderRoutes = require('./api/routes/orders');
 const userRoutes = require('./api/routes/users');
 
 //Connect to monngodb atlas or local mongodb using mongoose
-mongoose.connect(process.env.ATLAS_URI 
+mongoose.connect(env.ATLAS_URI 
   || "mongodb://localhost/restful-react",
   { useNewUrlParser: true, useUnifiedTopology: true })
 
