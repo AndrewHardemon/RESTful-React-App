@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const cors = require('cors')
 const mongoose = require('mongoose');
+require("dotenv").config();
 
 //Getting the routes form our api/routes folder
 const productRoutes = require('./api/routes/products');
