@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const Order = require('../models/order');
 const Product = require('../models/product');
 const { route } = require('./products');
+const checkAuth = require('../middleware/check-auth');
 
 //Error Handle Function
 function errorHandle(res, err) {
@@ -14,7 +15,7 @@ function errorHandle(res, err) {
 }
 
 //GET
-router.get('/', (req, res, next) => {
+router.get('/', checkAuth, (req, res, next) => {
   Order.find()
     .select('product quantity _id')
     .exec()
@@ -39,7 +40,7 @@ router.get('/', (req, res, next) => {
 });
 
 //POST
-router.post('/', (req, res, next) => {
+router.post('/', checkAuth, (req, res, next) => {
   //Check to see if product exists
   Product.findById(req.body.productId)
     .then(product => {
@@ -76,7 +77,7 @@ router.post('/', (req, res, next) => {
 });
 
 //GET/:id 
-router.get('/:orderId', (req, res, next) => {
+router.get('/:orderId', checkAuth, (req, res, next) => {
   Order.findById(req.params.orderId)
     .exec()
     .then(order => {
@@ -98,7 +99,7 @@ router.get('/:orderId', (req, res, next) => {
 });
 
 //DELETE/:id 
-router.delete('/:orderId', (req, res, next) => {
+router.delete('/:orderId', checkAuth, (req, res, next) => {
   Order.deleteOne({_id: req.params.orderId})
     .exec()
     .then(result =>{

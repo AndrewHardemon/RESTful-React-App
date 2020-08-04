@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const multer = require('multer');
+const checkAuth = require('../middleware/check-auth');
 
 //Storage
 const storage = multer.diskStorage({
@@ -77,7 +78,7 @@ router.get('/', (req, res, next) => {
 });
 
 //POST (added upload middleware)
-router.post('/', upload.single('productImage'),(req, res, next) => {
+router.post('/', checkAuth, upload.single('productImage'), (req, res, next) => {
   console.log(req.file);
   //Create product in Mongo with Mongoose
   const product = new Product({
@@ -131,7 +132,7 @@ router.get('/:productId', (req, res, next) => {
 });
 
 //PATCH/:id
-router.patch('/:productId', (req, res, next) => {
+router.patch('/:productId', checkAuth, (req, res, next) => {
   const updateOps = {};
   //Run through req.body to find name and value pairs for $set
   for (const ops of req.body) { //uses object inside of array
@@ -153,7 +154,7 @@ router.patch('/:productId', (req, res, next) => {
 });
 
 //DELETE/:id
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', checkAuth, (req, res, next) => {
   Product.deleteOne({_id: req.params.productId})
     .exec()
     .then((/*result*/) => {
